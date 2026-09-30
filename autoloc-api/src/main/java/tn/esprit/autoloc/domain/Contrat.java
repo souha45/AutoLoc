@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.math.*;
 import java.time.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "contrat")
@@ -25,4 +27,15 @@ public class Contrat {
 
     @Column(nullable = false)
     private boolean valide;
+
+    @OneToMany(mappedBy = "contrat", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<Paiement> paiements = new HashSet<>();
+
+    public void addPaiement(Paiement paiement) {
+        paiements.add(paiement);
+        paiement.setContrat(this);
+    }
+
+    @OneToOne(mappedBy = "contrat")
+    private Reservation reservation;
 }

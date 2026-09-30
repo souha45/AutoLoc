@@ -3,6 +3,9 @@ package tn.esprit.autoloc.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "agence")
 @Getter
@@ -26,4 +29,15 @@ public class Agence {
 
     @Column(length = 20)
     private String telephone;
+
+    @OneToMany(mappedBy = "agence",cascade=CascadeType.PERSIST, fetch=FetchType.EAGER)
+    private Set<Vehicule> vehicules = new HashSet<>();
+
+    @OneToMany(mappedBy = "agence")
+    private Set<Employe> employes = new HashSet<>();
+
+    public void addVehicule(Vehicule vehicule) {
+        vehicules.add(vehicule);
+        vehicule.setAgence(this);
+    }
 }
