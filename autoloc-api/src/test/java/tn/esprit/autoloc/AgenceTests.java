@@ -3,11 +3,17 @@ package tn.esprit.autoloc;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.CrudRepository;
+
 import tn.esprit.autoloc.domain.Agence;
 import tn.esprit.autoloc.domain.CategorieVehicule;
 import tn.esprit.autoloc.domain.StatutVehicule;
 import tn.esprit.autoloc.domain.Vehicule;
+import tn.esprit.autoloc.repository.IAgenceRepository;
+
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.math.BigDecimal;
@@ -15,14 +21,19 @@ import java.math.BigDecimal;
 interface AgenceRepositoryMock extends CrudRepository<Agence, Long> {
 }
 
-
 @SpringBootTest
 public class AgenceTests {
-    @Autowired
-    private AgenceRepositoryMock agenceRepository;
 
-    @Test
-    void addAgence() {
+    @Autowired
+    private AgenceRepositoryMock basicAgenceRepository;
+
+    @Autowired
+    private IAgenceRepository fullAgenceRepository;
+
+    private void addAgence(CrudRepository<Agence, Long> repository) {
+
+        int ms = (int) System.currentTimeMillis();
+
         Agence agence = new Agence();
         agence.setNom("Agence ariana");
         agence.setAdresse("1 Rue Hedi");
@@ -30,7 +41,7 @@ public class AgenceTests {
         agence.setVille("Tunis");
 
         Vehicule v1 = new Vehicule();
-        v1.setImmatriculation("785414TU96");
+        v1.setImmatriculation("785414TU96" + ms);
         v1.setMarque("Isuzu");
         v1.setModele("DMax");
         v1.setCategorie(CategorieVehicule.SUV);
@@ -38,7 +49,7 @@ public class AgenceTests {
         v1.setTarifJournalier(new BigDecimal("100"));
 
         Vehicule v2 = new Vehicule();
-        v2.setImmatriculation("785414TU95");
+        v2.setImmatriculation("785414TU95" + ms);
         v2.setMarque("Toyota");
         v2.setModele("Yaris");
         v2.setCategorie(CategorieVehicule.UTILITAIRE);
@@ -48,14 +59,29 @@ public class AgenceTests {
         agence.addVehicule(v1);
         agence.addVehicule(v2);
 
-        agenceRepository.save(agence);
+        repository.save(agence);
     }
 
     @Test
-    void loadAgence() {
+    public void fullAddAgence() {
+        addAgence(fullAgenceRepository);
+    }
+
+    @Test
+    public void basicAddAgence() {
+        addAgence(basicAgenceRepository);
+    }
+
+    private void loadAgence(CrudRepository<Agence, Long> repository) {
+
         StringBuilder sb = new StringBuilder("\n");
 
-        for (Agence agence : agenceRepository.findAll()) {
+        sb.append("Type: ")
+                .append(repository.getClass().getSimpleName())
+                .append("\n");
+
+        for (Agence agence : repository.findAll()) {
+
             sb.append(agence.getIdAgence())
                     .append(" | ")
                     .append(agence.getNom())
@@ -66,14 +92,100 @@ public class AgenceTests {
                     .append("\n");
 
             for (Vehicule v : agence.getVehicules()) {
+
                 sb.append("=== ")
                         .append(v.getIdVehicule())
-                        .append("|")
+                        .append(" | ")
                         .append(v.getImmatriculation())
                         .append("\n");
             }
         }
 
-        fail(sb.toString()); // assertion qui échoue toujours : affiche le résultat
+        fail(sb.toString());
+    }
+
+    @Test
+    public void fullLoadAddAgence() {
+        loadAgence(fullAgenceRepository);
+    }
+
+    @Test
+    public void basicLoadAddAgence() {
+        loadAgence(basicAgenceRepository);
+    }
+
+    @Test
+    public void loadSortedAgences(){
+        StringBuilder sb = new StringBuilder("\n");
+
+        var sort= Sort.by("idAgence").descending();
+
+        for (Agence agence : fullAgenceRepository.findAll(sort)) {
+
+            sb.append(agence.getIdAgence())
+                    .append(" | ")
+                    .append(agence.getNom())
+                    .append("\n");
+
+            sb.append("Vehicules Count : ")
+                    .append(agence.getVehicules().size())
+                    .append("\n");
+
+            for (Vehicule v : agence.getVehicules()) {
+
+                sb.append("=== ")
+                        .append(v.getIdVehicule())
+                        .append(" | ")
+                        .append(v.getImmatriculation())
+                        .append("\n");
+            }
+        }
+
+        fail(sb.toString());
+
+    }
+
+    @Test
+    public void loadPagedAgences() {
+
+        StringBuilder sb = new StringBuilder("\n");
+
+        var sort = Sort.by("idAgence").descending();
+        var pageRequest = PageRequest.of(0, 2, sort);
+        Page<Agence> page = fullAgenceRepository.findAll(pageRequest);
+
+        sb.append("Total pages : ").append(page.getTotalPages()).append("\n");
+
+        do {
+            sb.append("Page en cours : ").append(page.getNumber()).append("\n");
+
+            for (Agence agence : page.getContent()) {
+
+                sb.append(agence.getIdAgence())
+                        .append(" | ")
+                        .append(agence.getNom())
+                        .append("\n");
+
+                sb.append("Vehicules Count : ")
+                        .append(agence.getVehicules().size())
+                        .append("\n");
+
+                for (Vehicule v : agence.getVehicules()) {
+                    sb.append("=== ")
+                            .append(v.getIdVehicule())
+                            .append(" | ")
+                            .append(v.getImmatriculation())
+                            .append("\n");
+                }
+            }
+
+            if (!page.hasNext()) {
+                break;
+            }
+            page = fullAgenceRepository.findAll(page.nextPageable());
+
+        } while (true);
+
+        fail(sb.toString());
     }
 }
