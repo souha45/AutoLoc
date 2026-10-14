@@ -8,21 +8,27 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.CrudRepository;
 
+import org.springframework.stereotype.Repository;
 import tn.esprit.autoloc.domain.Agence;
 import tn.esprit.autoloc.domain.CategorieVehicule;
 import tn.esprit.autoloc.domain.StatutVehicule;
 import tn.esprit.autoloc.domain.Vehicule;
 import tn.esprit.autoloc.repository.IAgenceRepository;
-
-import static org.junit.jupiter.api.Assertions.fail;
+import tn.esprit.autoloc.service.IAgenceService;
 
 import java.math.BigDecimal;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+@Repository
 interface AgenceRepositoryMock extends CrudRepository<Agence, Long> {
 }
 
 @SpringBootTest
 public class AgenceTests {
+
+    @Autowired
+    private IAgenceService agenceService;
 
     @Autowired
     private AgenceRepositoryMock basicAgenceRepository;
@@ -187,5 +193,20 @@ public class AgenceTests {
         } while (true);
 
         fail(sb.toString());
+    }
+
+    @Test
+    void createAgence() {
+        Agence agence = new Agence();
+        agence.setNom("Agence Tunis");
+        agence.setTelephone("71123456");
+        agence.setAdresse("1 Rue Hedi");
+        agence.setVille("Tunis");
+
+        Agence saved = agenceService.create(agence);
+
+        assertNotNull(saved);
+        assertNotNull(saved.getIdAgence());   // l'id doit avoir été généré
+        assertEquals("Agence Tunis", saved.getNom());
     }
 }
