@@ -1,5 +1,6 @@
 package tn.esprit.autoloc.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,6 +22,7 @@ public class Equipement {
     @Column(nullable = false, unique = true, length = 50)
     private String libelle;
 
-    @ManyToMany(mappedBy = "equipements")
+    @JsonIgnore
+    @ManyToMany
     private Set<Vehicule> vehicules = new HashSet<>();
 }

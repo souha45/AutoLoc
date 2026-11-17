@@ -4,4 +4,5 @@ import tn.esprit.autoloc.domain.Agence;
 
 public interface IAgenceService extends IGenericService<Agence, Long> {
     boolean hasVehicules(Long id);
+    Agence updateAvecEmployes(Long id, Agence agence);
 }

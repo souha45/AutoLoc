@@ -23,6 +23,6 @@ public class ClientServiceImpl extends GenericServiceImpl<Client, Long> implemen
 
     @Override
     public boolean check(Client c, boolean isNew) {
-        return Utils.isNoEmpty(c.getNom()); // + les champs obligatoires
+        return Utils.isNotEmpty(c.getNom()); // + les champs obligatoires
     }
 }
