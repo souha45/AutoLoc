@@ -15,6 +15,6 @@ public class ReservationServiceImpl extends GenericServiceImpl<Reservation, Long
         BeanUtils.copyProperties(source, target, "idReservation");
     }
     @Override public boolean check(Reservation e, boolean isNew) {
-        return e != null; // TODO: champs obligatoires
+        return e != null;
     }
 }

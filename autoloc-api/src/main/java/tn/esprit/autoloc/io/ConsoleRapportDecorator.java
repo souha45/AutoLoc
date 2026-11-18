@@ -1,13 +1,19 @@
 package tn.esprit.autoloc.io;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component // L'annotation demandée par l'atelier
 public class ConsoleRapportDecorator implements IRapport {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ConsoleRapportDecorator.class);
+
     private IRapport rapport;
 
-    // Constructeur vide pour Spring
+    // Constructeur utilisé par Spring
+    @Autowired
     public ConsoleRapportDecorator() {
     }
 
@@ -23,10 +29,10 @@ public class ConsoleRapportDecorator implements IRapport {
         }
         String contenu = rapport.genererRapport();
 
-        // Ajout de la fonctionnalité (affichage console)
-        System.out.println("\n=== AFFICHAGE CONSOLE DU RAPPORT ===");
-        System.out.println(contenu);
-        System.out.println("====================================\n");
+        // Ajout de la fonctionnalité (affichage console) via le logger
+        LOG.info("=== AFFICHAGE CONSOLE DU RAPPORT ===");
+        LOG.info("{}", contenu);
+        LOG.info("====================================");
 
         // On retourne le contenu original pour que Postman l'affiche aussi
         return contenu;

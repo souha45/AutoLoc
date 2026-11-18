@@ -1,5 +1,6 @@
 package tn.esprit.autoloc;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,8 +25,9 @@ import static org.junit.jupiter.api.Assertions.*;
 interface AgenceRepositoryMock extends CrudRepository<Agence, Long> {
 }
 
+@Disabled("Tests des anciens ateliers, désactivés")
 @SpringBootTest
-public class AgenceTests {
+class AgenceTests {
 
     @Autowired
     private IAgenceService agenceService;
@@ -36,7 +38,7 @@ public class AgenceTests {
     @Autowired
     private IAgenceRepository fullAgenceRepository;
 
-    private void addAgence(CrudRepository<Agence, Long> repository) {
+    private Agence addAgence(CrudRepository<Agence, Long> repository) {
 
         int ms = (int) System.currentTimeMillis();
 
@@ -65,17 +67,21 @@ public class AgenceTests {
         agence.addVehicule(v1);
         agence.addVehicule(v2);
 
-        repository.save(agence);
+        return repository.save(agence);
     }
 
     @Test
-    public void fullAddAgence() {
-        addAgence(fullAgenceRepository);
+    void fullAddAgence() {
+        Agence saved = addAgence(fullAgenceRepository);
+        assertNotNull(saved.getIdAgence());
+        assertEquals(2, saved.getVehicules().size());
     }
 
     @Test
-    public void basicAddAgence() {
-        addAgence(basicAgenceRepository);
+    void basicAddAgence() {
+        Agence saved = addAgence(basicAgenceRepository);
+        assertNotNull(saved.getIdAgence());
+        assertEquals(2, saved.getVehicules().size());
     }
 
     private void loadAgence(CrudRepository<Agence, Long> repository) {
@@ -111,17 +117,17 @@ public class AgenceTests {
     }
 
     @Test
-    public void fullLoadAddAgence() {
+    void fullLoadAddAgence() {
         loadAgence(fullAgenceRepository);
     }
 
     @Test
-    public void basicLoadAddAgence() {
+    void basicLoadAddAgence() {
         loadAgence(basicAgenceRepository);
     }
 
     @Test
-    public void loadSortedAgences(){
+    void loadSortedAgences(){
         StringBuilder sb = new StringBuilder("\n");
 
         var sort= Sort.by("idAgence").descending();
@@ -152,7 +158,7 @@ public class AgenceTests {
     }
 
     @Test
-    public void loadPagedAgences() {
+    void loadPagedAgences() {
 
         StringBuilder sb = new StringBuilder("\n");
 

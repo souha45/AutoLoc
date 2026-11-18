@@ -8,9 +8,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import tn.esprit.autoloc.exception.ResourceNotFoundException;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final ZoneId ZONE = ZoneId.of("Africa/Tunis");
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleResourceNotFound(
@@ -18,7 +21,7 @@ public class GlobalExceptionHandler {
             HttpServletRequest request) {
 
         ErrorResponse error = new ErrorResponse(
-                LocalDateTime.now(),
+                LocalDateTime.now(ZONE),
                 HttpStatus.NOT_FOUND.value(),
                 "Not Found",
                 ex.getMessage(),
@@ -34,7 +37,7 @@ public class GlobalExceptionHandler {
             HttpServletRequest request) {
 
         ErrorResponse error = new ErrorResponse(
-                LocalDateTime.now(),
+                LocalDateTime.now(ZONE),
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "Internal Server Error",
                 "Une erreur interne est survenue.",
@@ -50,7 +53,7 @@ public class GlobalExceptionHandler {
             HttpServletRequest request) {
 
         ErrorResponse error = new ErrorResponse(
-                LocalDateTime.now(),
+                LocalDateTime.now(ZONE),
                 HttpStatus.BAD_REQUEST.value(),
                 "Bad Request",
                 ex.getMessage(),
@@ -60,4 +63,3 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 }
-

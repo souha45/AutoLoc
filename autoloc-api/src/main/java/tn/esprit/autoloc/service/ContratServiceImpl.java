@@ -15,6 +15,6 @@ public class ContratServiceImpl extends GenericServiceImpl<Contrat, Long> implem
         BeanUtils.copyProperties(source, target, "idContrat");
     }
     @Override public boolean check(Contrat e, boolean isNew) {
-        return e != null; // TODO: champs obligatoires
+        return e != null;
     }
 }

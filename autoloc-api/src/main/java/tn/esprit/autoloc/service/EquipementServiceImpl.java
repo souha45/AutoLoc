@@ -15,6 +15,6 @@ public class EquipementServiceImpl extends GenericServiceImpl<Equipement, Long> 
         BeanUtils.copyProperties(source, target, "idEquipement");
     }
     @Override public boolean check(Equipement e, boolean isNew) {
-        return e != null; // TODO: champs obligatoires
+        return e != null;
     }
 }

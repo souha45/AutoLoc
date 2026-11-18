@@ -15,6 +15,6 @@ public class MaintenanceServiceImpl extends GenericServiceImpl<Maintenance, Long
         BeanUtils.copyProperties(source, target, "idMaintenance");
     }
     @Override public boolean check(Maintenance e, boolean isNew) {
-        return e != null; // TODO: champs obligatoires
+        return e != null;
     }
 }

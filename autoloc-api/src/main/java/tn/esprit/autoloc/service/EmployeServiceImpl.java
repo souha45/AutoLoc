@@ -15,6 +15,6 @@ public class EmployeServiceImpl extends GenericServiceImpl<Employe, Long> implem
         BeanUtils.copyProperties(source, target, "idEmploye");
     }
     @Override public boolean check(Employe e, boolean isNew) {
-        return e != null; // TODO: champs obligatoires
+        return e != null;
     }
 }
